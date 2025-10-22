@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sorry Aaru — Ek lambe dil se maafi</title>
+  <style>
+    :root{
+      --bg1:#ffeef6;--bg2:#fff5fa;--pink:#ff8fbf;--deep:#ff5aa3;--muted:#7a5b6a;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:'Poppins',sans-serif;
+      background:linear-gradient(180deg,var(--bg1),var(--bg2));
+      overflow-x:hidden;
+      color:#4a2533;
+      transition:background 2s ease, color 2s ease;
+    }
+    .container{max-width:980px;margin:40px auto;padding:24px;text-align:center}
+    header h1{font-size:30px;color:var(--deep);animation:fadeIn 2s ease forwards;}
+    header p{color:var(--muted);margin-top:6px;}
+    .letter{
+      background:rgba(255,255,255,0.9);
+      backdrop-filter:blur(10px);
+      border-radius:18px;
+      padding:24px;
+      margin-top:22px;
+      box-shadow:0 8px 20px rgba(255,100,150,.15);
+      animation:fadeUp 2s ease;
+    }
+    .typed{
+      font-family:'Dancing Script',cursive;
+      font-size:22px;line-height:1.8;
+      color:#5a3048;
+      text-shadow:0 0 10px rgba(255,120,160,.15);
+      min-height: 200px;
+    }
+    .controls{margin-top:14px;}
+    .btn{background:var(--pink);color:white;border:none;padding:10px 16px;margin:0 5px;border-radius:10px;cursor:pointer;transition:0.3s;}
+    .btn:hover{background:var(--deep);transform:scale(1.05);}
+
+    /* floating hearts */
+    .heart{
+      position:fixed;bottom:-10px;width:20px;height:20px;background:var(--pink);
+      transform:rotate(45deg);
+      animation:floatUp 10s linear infinite;
+      opacity:0.8;
+      pointer-events: none;
+    }
+    .heart::before,.heart::after{
+      content:'';position:absolute;width:20px;height:20px;border-radius:50%;background:var(--pink);
+    }
+    .heart::before{top:-10px;left:0;}
+    .heart::after{left:-10px;top:0;}
+
+    @keyframes floatUp{
+      0%{transform:translateY(0) rotate(45deg) scale(1);opacity:0.9;}
+      100%{transform:translateY(-110vh) rotate(45deg) scale(0.6);opacity:0;}
+    }
+    @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:none;}}
+
+    /* music player */
+    .music-player{
+      position:fixed;bottom:20px;right:20px;
+      background:rgba(255,255,255,0.9);
+      border-radius:20px;box-shadow:0 6px 18px rgba(255,100,150,.25);
+      padding:10px 16px;display:flex;align-items:center;gap:8px;
+      backdrop-filter:blur(10px);
+      animation:fadeIn 2s ease forwards;
+      z-index: 10;
+    }
+    .music-player button{
+      background:var(--pink);color:white;border:none;border-radius:50%;width:36px;height:36px;cursor:pointer;transition:0.3s;
+    }
+    .music-player button:hover{background:var(--deep);transform:scale(1.1);}
+    .volume-control{display:flex;align-items:center;gap:4px;}
+    .volume-control input{accent-color:var(--deep);}
+
+    /* Final message */
+    .final-message{
+      display:none;
+      height:100vh;
+      width:100vw;
+      background:white;
+      position:fixed;
+      top:0;left:0;
+      z-index:1000;
+      justify-content:center;
+      align-items:center;
+      text-align:center;
+      font-size:26px;
+      color:var(--deep);
+      font-family:'Dancing Script',cursive;
+      opacity:0;
+      transition:opacity 3s ease;
+    }
+    .final-message.show {
+      display: flex;
+    }
+    .final-message.fade-in {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Sorry Aaru — Ek lambe dil se maafi 💖</h1>
+    <p>Maine yeh page tumhare liye banaya hai — lambi, thoughtful aur dil se. Har hisse ko dheere-dheere dekhna. ❤️</p>
+
+    <div class="letter">
+      <div class="typed" id="typed">*Press Start Letter to begin...*</div>
+      <div class="controls">
+        <button class="btn" id="startBtn">Start Letter</button>
+        <button class="btn" id="pauseBtn">Pause</button>
+        <button class="btn" id="fastBtn">Fast</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="final-message" id="finalMsg">
+    I love you 💗 Ummah 💋 my wife 🤭💗 I'll be with you until my Last breath 💓 we will achieve together 🤝
+  </div>
+
+  <!-- Floating Music Player -->
+  <div class="music-player">
+    <button id="prev">⏮</button>
+    <button id="play">⏯</button>
+    <button id="next">⏭</button>
+    <div class="volume-control">
+      <button id="volDown">🔉</button>
+      <input type="range" id="volume" min="0" max="1" step="0.01" value="0.6" />
+      <button id="volUp">🔊</button>
+    </div>
+  </div>
+
+  <script>
+    // Floating heart generator
+    setInterval(()=>{
+      const heart=document.createElement('div');
+      heart.classList.add('heart');
+      heart.style.left=Math.random()*100+'vw';
+      heart.style.animationDuration=5+Math.random()*5+'s';
+      document.body.appendChild(heart);
+      setTimeout(()=>heart.remove(),10000);
+    },600);
+
+    // Typed text logic
+    const text = `.🙁 Sorry meri Aaru mujhe maf kardo 🥺 i know ap yeh soch rahe hai ki agar maine kuch nhi kiya to kya hoga 🥺 but actually sab sochta hu hamare future ke bare me 🥺aur karta bhi hu mai abhi thora aur sikhna hai mujhe Skill develop karna hoga mujhe tab jake mujhe job milegi  Ap tension na lo🥺 i won't give up mere pass 4 sal hai enough  hai mere liye 🥺 bass ap mere sath rehna we will achieve together madam ji 🥺 ap jab mere sath ho to mai give up karne ko  nhi sochta  na🙁🙁hi karta hu mai bass ye sochta hu ki mai ye sab aaru ke liye kar raha hu isliye 🥺 mai give up nhi karta because u are the reason 💓. Mere Aaru tension mat lo sab karlunga mai 😚 don't worry my wife 💗 4 sal bahut hai mere liyeMy cutie 😚 apko pane ke liye mai had se age chala jaunga don't worry ap mere sath rehna mai sab karlunga mai🥺. Bahut low feel kar raha hu madam ji 🙁🙁.`;
+
+    const typed=document.getElementById('typed');
+    let i=0, speed=60, typing=false, timeout;
+
+    function type(){
+      if(i<text.length){
+        typed.textContent+=text.charAt(i);
+        i++;
+        timeout=setTimeout(type,speed);
+      } else {
+        setTimeout(showFinalMessage,1000);
+      }
+    }
+    
+    function showFinalMessage(){
+      document.body.style.background='white';
+      document.querySelector('.container').style.display='none';
+      const finalMsg = document.getElementById('finalMsg');
+      finalMsg.classList.add('show');
+      setTimeout(()=>{
+        finalMsg.classList.add('fade-in');
+      },100);
+    }
+
+    document.getElementById('startBtn').onclick=()=>{
+      if(!typing){
+        typing=true;
+        typed.textContent='';
+        type();
+      }
+    };
+    
+    document.getElementById('pauseBtn').onclick=()=>{
+      clearTimeout(timeout);
+      typing=false;
+    };
+    
+    document.getElementById('fastBtn').onclick=()=>{
+      speed=10;
+    };
+
+    // Music Player Logic
+    const songs=['song1.mp3','song2.mp3','song3.mp3','song4.mp3','song5.mp3'];
+    let current=0;
+    const audio=new Audio();
+    audio.volume=0.6;
+    const playBtn=document.getElementById('play');
+    const nextBtn=document.getElementById('next');
+    const prevBtn=document.getElementById('prev');
+    const volRange=document.getElementById('volume');
+    const volUp=document.getElementById('volUp');
+    const volDown=document.getElementById('volDown');
+
+    playBtn.onclick=()=>{
+      if(audio.paused){
+        if(!audio.src) audio.src = songs[current];
+        audio.play();
+        playBtn.textContent='⏸';
+      } else {
+        audio.pause();
+        playBtn.textContent='⏯';
+      }
+    };
+    
+    nextBtn.onclick=()=>{
+      current=(current+1)%songs.length;
+      audio.src=songs[current];
+      audio.play();
+      playBtn.textContent='⏸';
+    };
+    
+    prevBtn.onclick=()=>{
+      current=(current-1+songs.length)%songs.length;
+      audio.src=songs[current];
+      audio.play();
+      playBtn.textContent='⏸';
+    };
+    
+    volRange.oninput=()=>{
+      audio.volume=volRange.value;
+    };
+    
+    volUp.onclick=()=>{
+      audio.volume=Math.min(1,audio.volume+0.1);
+      volRange.value=audio.volume;
+    };
+    
+    volDown.onclick=()=>{
+      audio.volume=Math.max(0,audio.volume-0.1);
+      volRange.value=audio.volume;
+    };
+  </script>
+</body>
+</html>
